@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="login-form">
+            <h2>Login In</h2>
+            <label>Username<input type="text" id="username"></label>
+            <label>Password<input type="password" id="password"></label>
+            <button id="login-button">Login</button>
+        </div>
+    </main>
+</body>
+<script>
+    async function main() {
+        var loginButton = document.getElementById('login-button')
+        loginButton.addEventListener('click', async (e) => {
+            const username = document.getElementById('username').value
+            const password = document.getElementById('password').value
+            var response = await fetch('http://localhost:1212/login', {
+                method: 'POST',
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({'username': username, password: password})
+            })
+            if(response.status == 401) { return alert("wrong credentials") }
+            var data = await response.json()
+            document.cookie = `token=${data.token}; expires=${new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString()}; path=/`;
+            alert(data.token)
+        })
+    }
+    main()
+</script>
+</html>
