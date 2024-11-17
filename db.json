@@ -1,6 +1,24 @@
 {
     "users": [
-        {"username": "danish", "password": "123"},
-        {"username": "pooja", "password": "321"}
+        {
+            "username": "danish",
+            "password": "123"
+        },
+        {
+            "username": "pooja",
+            "password": "321"
+        },
+        {
+            "username": "danish2",
+            "password": "e55da6317274f7d40a973371a254231a"
+        },
+        {
+            "username": "pooja2",
+            "password": "e55da6317274f7d40a973371a254231a"
+        },
+        {
+            "username": "pooja3",
+            "password": "8a7a6f704d3c96187e24925938c8053c"
+        }
     ]
 }

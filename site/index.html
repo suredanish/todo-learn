@@ -21,17 +21,22 @@
         loginButton.addEventListener('click', async (e) => {
             const username = document.getElementById('username').value
             const password = document.getElementById('password').value
+            const response = await sendCredentails({username, password})
+            if(response.status != 200) { return alert("something went wrong") }
+
+            var token = await response.text()
+            document.cookie = `token=${token}; expires=${new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString()}; path=/`;
+        })
+        const sendCredentails = async (cred)=> {
             var response = await fetch('http://localhost:1212/login', {
                 method: 'POST',
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({'username': username, password: password})
+                body: JSON.stringify(cred)
             })
-            if(response.status == 401) { return alert("wrong credentials") }
-            var data = await response.json()
-            document.cookie = `token=${data.token}; expires=${new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString()}; path=/`;
-            alert(data.token)
-        })
+            return response
+        }
     }
     main()
+
 </script>
 </html>
