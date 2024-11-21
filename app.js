@@ -5,7 +5,13 @@ const fs = require('fs/promises')
 const app = express()
 const port = 1212
 const dbPath = './db.json'
-app.use(cors())
+var jwt = require('jsonwebtoken');
+const SecKey = 'noSecret123'
+
+app.use(cors({
+  origin: 'http://localhost:5500',
+  credentials: true
+}))
 app.use(express.json())
 
 app.get('/', (req, res) => {
@@ -18,9 +24,16 @@ app.post('/login', async (req, res) => {
     const {username, password} = req.body
     const user = (await db()).users.find(u => u.username == username)
     console.log(user, req.body)
+    console.log(req.headers)
     if(user){
         if(user.password == password) {
-            return res.send(generateToken(user))
+          var token = jwt.sign({username: user.username}, SecKey, { expiresIn: '24h' }); // { expiresIn: '1h' }
+            return res.cookie('token', token, {
+              sameSite: 'lax', // for development
+              secure: false, // if set to yes the cookie wont be send if request is send via http
+              maxAge: 24 * 3600 * 1000
+            })
+            .send()
         }
     }
     res.status(401).send()

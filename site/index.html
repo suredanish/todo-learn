@@ -23,13 +23,12 @@
             const password = document.getElementById('password').value
             const response = await sendCredentails({username, password})
             if(response.status != 200) { return alert("something went wrong") }
-
-            var token = await response.text()
-            document.cookie = `token=${token}; expires=${new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString()}; path=/`;
+            alert("login in")
         })
         const sendCredentails = async (cred)=> {
             var response = await fetch('http://localhost:1212/login', {
                 method: 'POST',
+                credentials: 'include', // if you recieve token in response save that
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(cred)
             })
