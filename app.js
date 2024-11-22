@@ -74,6 +74,16 @@ app.post('/login', async (req, res) => {
     res.status(401).send()
 })
 
+app.get('/helloworld', (req, res) => {
+  res.send('Hello World!')
+})
+
+
+app.get('/todo', async(req, res) => {
+  // req.user??
+  return res.send("from todo")
+})
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
