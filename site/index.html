@@ -27,8 +27,14 @@
         loginButton.addEventListener('click', async (e) => {
             const username = document.getElementById('username').value
             const password = document.getElementById('password').value
-            const response = await loginRequest({username, password})
-            if(response.status != 200) { return alert("something went wrong") }
+            try{
+                const response = await loginRequest({username, password})
+                if(response.status != 200) { return alert("something went wrong") }
+            }
+            catch(ex){
+                alert("Something went wrong")
+                console.error(ex)
+            }
             alert("login in")
         })
 
