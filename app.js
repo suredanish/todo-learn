@@ -21,13 +21,20 @@ app.post('/login', async (req, res) => {
     // req.body.username, req.body.password {username: 'danish', password: '123'}
     // const username = req.body.username
     // const password = req.body['password']
-    const {username, password} = req.body
-    const user = (await db()).users.find(u => u.username == username)
-    console.log(user, req.body)
-    console.log(req.headers)
-    if(user){
-        if(user.password == password) {
-          var token = jwt.sign({username: user.username}, SecKey, { expiresIn: '24h' }); // { expiresIn: '1h' }
+    //const {username, password} = req.body
+    const usernameFromReq=req.body.username
+    const passwordFromReq=req.body.password
+
+    const user = (await db()).users.find(u => u.username == usernameFromReq)
+
+    //console.log(user, req.body)
+    //console.log(req.headers)
+
+    if(user!=undefined){
+        if(user.password == ourHash(passwordFromReq)) {
+          var token = jwt.sign({"username": user.username}, SecKey, { expiresIn: '24h' }); // { expiresIn: '1h' }
+                                // {"username":"danish"}
+
             return res.cookie('token', token, {
               sameSite: 'lax', // for development
               secure: false, // if set to yes the cookie wont be send if request is send via http
@@ -48,11 +55,21 @@ app.post('/signup', async (req, res) => {
   // used (await db()) to wait for file open and we are opening file on every lookup so we can get the lates file
   const user = (await db()).users.find(u => u.username == username)
 
-  if(user) return res.status(409).send('username exists');
+  if(user!=undefined)
+    return res.status(409).send('username exists');
 
   await addUser({username, password: ourHash(password)})
-  return res.status(201).send()
+  
+  var token = jwt.sign({"username": username}, SecKey, { expiresIn: '24h' }); // { expiresIn: '1h' }
+                                // {"username":"danish"}
 
+            return res.status(201).cookie('token', token, {
+              sameSite: 'lax', // for development
+              secure: false, // if set to yes the cookie wont be send if request is send via http
+              maxAge: 24 * 3600 * 1000
+            })
+            .send()
+  
 })
 
 app.listen(port, () => {
@@ -60,7 +77,12 @@ app.listen(port, () => {
 })
 
 const generateToken = (user) => user.username + user.password + 123123
-const ourHash = (s) => crypto.createHash('md5').update(s + 'ourSecret').digest('hex')
+//const ourHash = (s) => crypto.createHash('md5').update(s + 'ourSecret').digest('hex')
+function ourHash(s){
+  return crypto.createHash('md5').update(s + 'ourSecret').digest('hex')
+}
+//ourHash(123);
+
 
 const addUser = async (newUser) => {
   // data is a string of charactors, we have to convert it to json next
@@ -85,3 +107,5 @@ const db = async () => {
 //   console.log(user)
 // }
 // test()
+
+
