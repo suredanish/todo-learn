@@ -78,7 +78,21 @@ app.get('/helloworld', (req, res) => {
   res.send('Hello World!')
 })
 
+app.use((req, res, next) => {
+  const cookie = req.headers.cookie || "";
+  // 'token=eyfsafda'
+  const token = cookie.split('=')[1]
 
+  try{
+    var decodedToken = jwt.verify(token, SecKey);
+    // console.log('decodedToken is', decodedToken)
+    req.user = decodedToken;
+    next()
+  }
+  catch(ex){
+    return res.status(401).send();
+  }
+})
 app.get('/todo', async(req, res) => {
   // req.user??
   return res.send("from todo")
