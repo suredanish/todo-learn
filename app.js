@@ -8,15 +8,43 @@ const dbPath = './db.json'
 var jwt = require('jsonwebtoken');
 const SecKey = 'noSecret123'
 
+// .   | 
+//     | 
+//     | 
+//     | 
+//     | 
+//     V
+
 app.use(cors({
   origin: 'http://localhost:5500',
   credentials: true
 }))
 app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+
+app.post('/signup', async (req, res) => {
+  const {username, password} = req.body
+  // used (await db()) to wait for file open and we are opening file on every lookup so we can get the lates file
+  const user = (await db()).users.find(u => u.username == username)
+
+  if(user!=undefined)
+    return res.status(409).send('username exists');
+
+  await addUser({username, password: ourHash(password)})
+  
+  var token = jwt.sign({"username": username}, SecKey, { expiresIn: '24h' }); // { expiresIn: '1h' }
+                                // {"username":"danish"}
+
+            return res.status(201).cookie('token', token, {
+              sameSite: 'lax', // for development
+              secure: false, // if set to yes the cookie wont be send if request is send via http
+              maxAge: 24 * 3600 * 1000
+            })
+            .send()
+  
 })
+
+
 app.post('/login', async (req, res) => {
     // req.body.username, req.body.password {username: 'danish', password: '123'}
     // const username = req.body.username
@@ -47,34 +75,10 @@ app.post('/login', async (req, res) => {
 })
 
 
-
-
-
-app.post('/signup', async (req, res) => {
-  const {username, password} = req.body
-  // used (await db()) to wait for file open and we are opening file on every lookup so we can get the lates file
-  const user = (await db()).users.find(u => u.username == username)
-
-  if(user!=undefined)
-    return res.status(409).send('username exists');
-
-  await addUser({username, password: ourHash(password)})
-  
-  var token = jwt.sign({"username": username}, SecKey, { expiresIn: '24h' }); // { expiresIn: '1h' }
-                                // {"username":"danish"}
-
-            return res.status(201).cookie('token', token, {
-              sameSite: 'lax', // for development
-              secure: false, // if set to yes the cookie wont be send if request is send via http
-              maxAge: 24 * 3600 * 1000
-            })
-            .send()
-  
-})
-
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
 
 const generateToken = (user) => user.username + user.password + 123123
 //const ourHash = (s) => crypto.createHash('md5').update(s + 'ourSecret').digest('hex')
