@@ -13,6 +13,12 @@
             <label>Password<input type="password" id="password"></label>
             <button id="login-button">Login</button>
         </div>
+        <div>
+          <h2>signIn</h2>  
+          <label>Username<input type="text" id="signedInUsername"></label>
+          <label>Password<input type="text" id="signedInPassword"></label>
+          <button id="signIn-button">signIn</button>
+        </div>
     </main>
 </body>
 <script>
@@ -21,11 +27,26 @@
         loginButton.addEventListener('click', async (e) => {
             const username = document.getElementById('username').value
             const password = document.getElementById('password').value
-            const response = await sendCredentails({username, password})
+            const response = await loginRequest({username, password})
             if(response.status != 200) { return alert("something went wrong") }
             alert("login in")
         })
-        const sendCredentails = async (cred)=> {
+
+        var signinButton = document.getElementById('signIn-button')
+        signinButton.addEventListener('click', async (e) => {
+            alert('clicked sing up button')
+            const username = document.getElementById('signedInUsername').value
+            const password = document.getElementById('signedInPassword').value
+            try{
+                const response = await signUpRequest({username: signedInUsername,password: signedInPassword})
+                if(response.status != 201) { return alert("something went wrong") }
+                alert('created')
+            }
+            catch(ex){
+                console.error(ex)
+            }
+        })
+        const loginRequest = async (cred)=> {
             var response = await fetch('http://localhost:1212/login', {
                 method: 'POST',
                 credentials: 'include', // if you recieve token in response save that
@@ -34,8 +55,17 @@
             })
             return response
         }
+        const signUpRequest = async (cred)=> {
+            var response = await fetch('http://localhost:1212/signup', {
+                method: 'POST',
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(cred)
+            })
+            return response
+        }
     }
     main()
+
 
 </script>
 </html>

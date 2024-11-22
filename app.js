@@ -39,6 +39,10 @@ app.post('/login', async (req, res) => {
     res.status(401).send()
 })
 
+
+
+
+
 app.post('/signup', async (req, res) => {
   const {username, password} = req.body
   // used (await db()) to wait for file open and we are opening file on every lookup so we can get the lates file
@@ -75,3 +79,9 @@ const db = async () => {
   const data = await fs.readFile(dbPath, 'utf8');
   return JSON.parse(data)
 }
+
+// async function test(){
+//   const user = (await db()).users.find(u =>u.username=="danish2");
+//   console.log(user)
+// }
+// test()
