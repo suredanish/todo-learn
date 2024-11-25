@@ -44,5 +44,14 @@
             "username": "danish6",
             "password": "d793b6a6d5fc6f2ea43f0905f65c5c00"
         }
+    ],
+    "todo": [
+        {"username": "danish5", "body": "Bring Milk", "finish": true},
+        {"username": "danish5", "body": "Bring Cookies", "finish": false},
+        {"username": "danish5", "body": "Wash Clothes", "finish": true},
+        {"username": "danish5", "body": "Get Parcel", "finish": false},
+        {"username": "danish5", "body": "Class Today", "finish": false},
+        {"username": "danish", "body": "Bring Milk", "finish": false},
+        {"username": "danish", "body": "Bring Milk", "finish": false}
     ]
 }
