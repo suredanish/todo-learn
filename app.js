@@ -5,6 +5,7 @@ const fs = require('fs/promises')
 const app = express()
 const port = 1212
 const dbPath = './db.json'
+const dbStatic = require(dbPath)
 var jwt = require('jsonwebtoken');
 const SecKey = 'noSecret123'
 
@@ -81,21 +82,22 @@ app.get('/helloworld', (req, res) => {
 app.use((req, res, next) => {
   const cookie = req.headers.cookie || "";
   // 'token=eyfsafda'
-  const token = cookie.split('=')[1]
-
   try{
+    const token = cookie.split('=')[1]
     var decodedToken = jwt.verify(token, SecKey);
     // console.log('decodedToken is', decodedToken)
     req.user = decodedToken;
     next()
   }
   catch(ex){
+    console.error(ex)
     return res.status(401).send();
   }
 })
 app.get('/todo', async(req, res) => {
   // req.user??
-  return res.send("from todo")
+  const todosOfThisUser = (await db()).todo.filter(t => t.username == req.user.username)
+  return res.send(todosOfThisUser)
 })
 
 
