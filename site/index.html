@@ -30,6 +30,7 @@
             try{
                 const response = await loginRequest({username, password})
                 if(response.status != 200) { return alert("something went wrong") }
+                window.location = 'todo.html'
             }
             catch(ex){
                 alert("Something went wrong")
@@ -46,7 +47,7 @@
             try{
                 const response = await signUpRequest({username: signedInUsername,password: signedInPassword})
                 if(response.status != 201) { return alert("something went wrong") }
-                alert('created')
+                window.location = 'todo.html'
             }
             catch(ex){
                 console.error(ex)
@@ -64,6 +65,7 @@
         const signUpRequest = async (cred)=> {
             var response = await fetch('http://localhost:1212/signup', {
                 method: 'POST',
+                credentials: 'include', // if you recieve token in response save that
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(cred)
             })
