@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+   <h1>Todos</h1>
+   <div id="todos">
+
+
+   </div>
+</body>
+<script>
+async function main() {
+    try{
+        var response = await fetch('http://localhost:1212/todo',{
+            credentials: 'include' // include the cookie you send me early
+        })
+        const todos = await response.json()
+        const todosHtmlAry = todos.map(t => `
+            <div>${t.body} - ${t.finish}</div>
+        `)
+        console.log(todosHtmlAry)
+        // ["<div>Bring Milk - true</div>", "<div>Bring Cookies - false</div>", "<div>Wash Clothes - true</div>", "<div>Get Parcel - false</div>", "<div>Class Today - false</div>"]
+        const todosHtml = todosHtmlAry.join('\n')
+        console.log(todosHtml)
+        // `
+        // <div>Bring Milk - true</div>
+        // <div>Bring Cookies - false</div>
+        // <div>Wash Clothes - true</div>
+        // <div>Get Parcel - false</div>
+        // <div>Class Today - false</div>
+        // `
+
+        document.getElementById('todos').insertAdjacentHTML('beforeend', todosHtml)
+    }
+    catch(ex){
+        console.error(ex)
+    }
+}
+main()
+</script>
+</html>
