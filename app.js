@@ -8,6 +8,8 @@ const dbPath = './db.json'
 const dbStatic = require(dbPath)
 var jwt = require('jsonwebtoken');
 const SecKey = 'noSecret123'
+const prisma = require('./prisma/db')
+const cookieParser = require('cookie-parser')
 
 // .   | 
 //     | 
@@ -21,17 +23,21 @@ app.use(cors({
   credentials: true
 }))
 app.use(express.json())
-
+app.use(cookieParser());
 
 app.post('/signup', async (req, res) => {
   const {username, password} = req.body
   // used (await db()) to wait for file open and we are opening file on every lookup so we can get the lates file
-  const user = (await db()).users.find(u => u.username == username)
+  const user = await prisma.user.findFirst({where: {username: username}})
+  // const user = (await db()).users.find(u => u.username == username)
 
   if(user!=undefined)
     return res.status(409).send('username exists');
 
-  await addUser({username, password: ourHash(password)})
+  await prisma.user.create({
+    data: {username: username, password: ourHash(password)}
+  })
+  // await addUser({username, password: ourHash(password)})
   
   var token = jwt.sign({"username": username}, SecKey, { expiresIn: '24h' }); // { expiresIn: '1h' }
                                 // {"username":"danish"}
@@ -54,7 +60,8 @@ app.post('/login', async (req, res) => {
     const usernameFromReq=req.body.username
     const passwordFromReq=req.body.password
 
-    const user = (await db()).users.find(u => u.username == usernameFromReq)
+    const user = await prisma.user.findFirst({where: {username: usernameFromReq}})
+    // const user = (await db()).users.find(u => u.username == usernameFromReq)
 
     //console.log(user, req.body)
     //console.log(req.headers)
@@ -80,10 +87,9 @@ app.get('/helloworld', (req, res) => {
 })
 
 app.use((req, res, next) => {
-  const cookie = req.headers.cookie || "";
   // 'token=eyfsafda'
   try{
-    const token = cookie.split('=')[1]
+    const token = req.cookies.token;
     var decodedToken = jwt.verify(token, SecKey);
     // console.log('decodedToken is', decodedToken)
     req.user = decodedToken;
@@ -96,7 +102,8 @@ app.use((req, res, next) => {
 })
 app.get('/todo', async(req, res) => {
   // req.user??
-  const todosOfThisUser = (await db()).todo.filter(t => t.username == req.user.username)
+  const todosOfThisUser = await prisma.todo.findMany({where: {username: req.user.username}})
+  // const todosOfThisUser = (await db()).todo.filter(t => t.username == req.user.username)
   return res.send(todosOfThisUser)
 })
 

@@ -14,10 +14,10 @@
             <button id="login-button">Login</button>
         </div>
         <div>
-          <h2>signIn</h2>  
+          <h2>sign up</h2>  
           <label>Username<input type="text" id="signedInUsername"></label>
           <label>Password<input type="text" id="signedInPassword"></label>
-          <button id="signIn-button">signIn</button>
+          <button id="signUp-button">sign up</button>
         </div>
     </main>
 </body>
@@ -39,13 +39,13 @@
             alert("login in")
         })
 
-        var signinButton = document.getElementById('signIn-button')
+        var signinButton = document.getElementById('signUp-button')
         signinButton.addEventListener('click', async (e) => {
-            alert('clicked sing up button')
-            const username = document.getElementById('signedInUsername').value
-            const password = document.getElementById('signedInPassword').value
+            const newUsername = document.getElementById('signedInUsername').value
+            const newPassword = document.getElementById('signedInPassword').value
+            debugger;
             try{
-                const response = await signUpRequest({username: signedInUsername,password: signedInPassword})
+                const response = await signUpRequest({username: newUsername ,password: newPassword})
                 if(response.status != 201) { return alert("something went wrong") }
                 window.location = 'todo.html'
             }
@@ -63,6 +63,7 @@
             return response
         }
         const signUpRequest = async (cred)=> {
+            debugger;
             var response = await fetch('http://localhost:1212/signup', {
                 method: 'POST',
                 credentials: 'include', // if you recieve token in response save that
